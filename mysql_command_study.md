@@ -1,4 +1,4 @@
-###3.教程
+##3.教程
 -select version(),currend_date;
 -select sin(pi()/4),(4*5)%3;
 -select version();select now();select 4*6;
