@@ -282,52 +282,163 @@ p_price>4000;
 - delete from goods4 where goods_id=1;
 -select * from goods4;
 -select * from goods where cat_id=4;
+-create table goods_num(
+    -> gid int,
+    -> name varchar(20),
+    -> num smallint
+    -> );
+-create table ord(
+    -> oid int,
+    -> gid int,
+    -> much smallint
+    -> );
+-insert into goods_num values
+    -> (1,"cat",34),(2,"dog",65),(3,"pig",21);
+-delimiter $//换结束符;为$
+- insert into ord values(123,1,2)$
+-select * from goods_num$
+-show triggers \G$
+-create trigger t1
+after insert on ord
+for each row
+begin
+update goods_num set num=num-new.much where gid=new.gid;
+end$
+-insert into ord values (111,2,3)$
+-select * from goods_num$
+-create trigger t2
+after delete on ord
+for each row
+begin
+update goods_num set num=num+old.much where gid=old.gid;
+end$
+-delete from ord where oid=111$
 -
+-create trigger t3
+before update on ord
+for each row
+begin
+update goods_num set num=num+old.much-new.much where gid=old.gid;
+end$
+-update ord set much=2 where oid=110$
+- select * from goods_num$
+-create trigger t1
+before insert on ord
+for each row
+begin
+declare
+rnum int;
+select num into rnum from goods_num where gid=new.gid;
+if new.much>rnum then
+    set new.much=rnum;
+end if;
+update goods_num set num=num-new.much where gid=new.gid;
+end$
+-insert into ord values (111,3,25)$
 -
+-create procedure p1()
+begin
+select 2+3;
+end$
 -
+-Create procedure name()
+Begin
+//sql代码
+End
+
+-Show procedure status$
+-call p1()$
+-show procedure status\G$
+-create procedure p2()
+begin
+declare age tinyint default 18;
+declare height tinyint default 180;
+select concat("年龄是：",age,"身高是：",height);
+end$
+-call p2()$
+-create procedure p3()
+begin
+declare age tinyint default 18;
+declare height tinyint default 180;
+set age:=age+20;
+select concat("年龄是：",age,"身高是：",height);
+end$
+-show procedure status\G$
+-create procedure p5(width int,height int)
+begin
+if width>height then
+    select "较宽";
+elseif width < height then
+    select "较高";
+else
+    select "较方";
+end if;
+end$
 -
+-create procedure p6(width int,height int)
+begin
+if width>height then
+    select "较宽";
+elseif width < height then
+    select "较高";
+else
+    select "较方";
+end if;
+select concat("你的面积是",width*height);
+end$
 -
+-create procedure p7()
+begin
+    declare sum int default 0;
+    declare num int default 0;
+    while num<100 do
+        set sum:=sum+num;
+        set num:=num+1;
+    end while;
+    select sum;
+end$
 -
+-create procedure p8(in n int)
+begin
+    declare sum int default 0;
+    declare num int default 0;
+    while num <= n do
+        set sum:=sum+num;
+        set num:=num+1;
+    end while;
+    select sum;
+end$
 -
+-create procedure p9(in n int,out sum int)
+begin
+    declare num int default 0;
+    set sum:=0;
+    while num <= n do
+        set sum:=sum+num;
+        set num:=num+1;
+    end while;
+end$
 -
+-call p9(100,@sum)$
+-select @sum$
 -
+-create procedure p10()
+begin
+    declare row_gid int;
+    declare row_name varchar(20);
+    declare row_cid int;
+    declare getgoods cursor for
+    select goods_id,goods_name,cat_id from goods;
+    open getgoods;
+    fetch getgoods into row_gid,row_name,row_cid;
+    close getgoods;
+    select row_gid,row_name,row_cid;
+end$
+
 -
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
+-grant all on *.* to zhangsan@"localhost" identified by "111";
+-mysql -hlocalhost -uzhangsan -p111
+-select * from user where user="zhangsan" \G
 -
 -
 -
